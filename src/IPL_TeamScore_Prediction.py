@@ -290,20 +290,11 @@ classifier = RandomizedSearchCV(
 classifier.fit(X_train, Y_train)
 
 
-importance = classifier.best_estimator_.feature_importances_
 
-feat_imp = pd.DataFrame({
-    'feature': X_train.columns,
-    'importance': importance
-}).sort_values('importance', ascending=False)
+print("Best Parameters:", classifier.best_params_)
+print("Best R2 Score:", classifier.best_score_)
 
-print(feat_imp.head(20))
-
-#
-# print("Best Parameters:", classifier.best_params_)
-# print("Best R2 Score:", classifier.best_score_)
-#
-# predictions = classifier.best_estimator_.predict(X_test)
-# print("Test R2:", r2_score(Y_test, predictions))
-# print("Test MAE:", mean_absolute_error(Y_test, predictions))
-# print("Test MSE:", mean_squared_error(Y_test, predictions))
+predictions = classifier.best_estimator_.predict(X_test)
+print("Test R2:", r2_score(Y_test, predictions))
+print("Test MAE:", mean_absolute_error(Y_test, predictions))
+print("Test MSE:", mean_squared_error(Y_test, predictions))
