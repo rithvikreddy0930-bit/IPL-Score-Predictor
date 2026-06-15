@@ -1,49 +1,184 @@
-# IPL Score Predictor
+# IPL First Innings Score Predictor
 
-A machine learning project that predicts first-innings IPL scores using historical ball-by-ball match data.
+A machine learning project that predicts the **final first-innings score in IPL matches** using historical ball-by-ball data.
 
-## Project Overview
+The model estimates what score a batting team is likely to finish with based on the current match state, momentum, player information, and match context.
 
-This project uses IPL match data to estimate the final first-innings score based on the current match situation. The goal is to explore data preprocessing, feature engineering, and regression-based machine learning models for score prediction.
+---
+
+## Overview
+
+This project focuses on building a realistic IPL score prediction system using:
+
+- Data cleaning and preprocessing
+- Cricket-specific feature engineering
+- Leakage-free model evaluation
+- Hyperparameter tuning
+- Feature importance analysis
+- Error analysis
+
+Only first-innings data is used.
+
+---
 
 ## Dataset
 
-- Historical IPL ball-by-ball match data
-- Match-level and innings-level information
-- Features engineered from live match state
+- Historical IPL ball-by-ball data
+- Seasons: **2008–2026**
+- One row per delivery
+- Target variable: `final_score`
+
+Dataset location:
+
+```text
+data/IPL.csv
+```
+
+---
 
 ## Features Used
 
-Some of the key features include:
+### Match State
 
-- Current score
-- Wickets fallen
-- Balls completed
-- Current run rate
-- Recent scoring trends
-- Partnership information
-- Team and venue related features
+- `team_runs`
+- `team_balls`
+- `team_wicket`
+- `current_run_rate`
+- `balls_remaining`
+- `wickets_remaining`
 
-## Machine Learning Workflow
+### Momentum Features
 
-1. Data Cleaning and Preprocessing
-2. Feature Engineering
-3. Exploratory Data Analysis (EDA)
-4. Model Training
-5. Model Evaluation
-6. Performance Comparison
+- `last_5_over_runs`
+- `last_2_over_runs`
+- `last_5_over_wickets`
+- `last_3_over_wickets`
 
-## Models Experimented With
+### Partnership & Player Features
+
+- `current_partnership`
+- `striker_career_sr`
+- `non_striker_sr`
+
+### Match Context
+
+- `batting_team`
+- `bowling_team`
+- `venue`
+- `season`
+- `stage`
+
+Categorical features are one-hot encoded.
+
+---
+
+## Preventing Data Leakage
+
+Since multiple rows belong to the same match, a standard random train-test split would leak information between training and testing data.
+
+To avoid this, the project uses:
+
+```python
+GroupShuffleSplit(groups=match_id)
+```
+
+This ensures that deliveries from the same match never appear in both train and test sets.
+
+---
+
+## Model Development
+
+The following models were evaluated:
 
 - Linear Regression
 - Random Forest Regressor
 - XGBoost Regressor
 
-## Results
+Hyperparameter tuning was performed using `RandomizedSearchCV`.
 
-Current best model performance:
+The tuned XGBoost model achieved the best performance and was selected as the final model.
 
-- R² Score: ~0.70
+---
+
+## Final Results
+
+### XGBoost Regressor
+
+| Metric | Value |
+|----------|----------|
+| R² Score | **0.705** |
+| MAE | **13.12** |
+| MSE | **298.60** |
+
+### Most Important Features
+
+- Current Run Rate
+- Last 5 Over Runs
+- Team Runs
+- Wickets Lost
+- Balls Remaining
+- Current Partnership
+
+These features capture both the current match state and recent scoring momentum.
+
+---
+
+## Key Findings
+
+- Recent scoring momentum is one of the strongest predictors of final score.
+- Career strike-rate features provide small but useful predictive signal.
+- Team recent-form features did not improve performance and were removed.
+- The model performs best on modern IPL seasons, where scoring patterns are more consistent.
+
+---
+
+## Error Analysis
+
+The model performs well on typical IPL scores but struggles with rare extreme outcomes.
+
+- Extremely low scores tend to be overpredicted.
+- Extremely high scores tend to be underpredicted.
+
+This regression-to-the-mean behaviour occurs because extreme matches are relatively rare in the training data.
+
+---
+
+## Project Structure
+
+```text
+IPL-Score-Predictor/
+│
+├── data/
+│   └── IPL.csv
+│
+├── models/
+│   └── ipl_score_predictor.pkl
+│
+├── src/
+│   └── ipl_score_predictor.py
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+python src/ipl_score_predictor.py
+```
+
+Place the trained model inside:
+
+```text
+models/ipl_score_predictor.pkl
+```
+
+before running predictions.
+
+---
 
 ## Technologies Used
 
@@ -52,17 +187,20 @@ Current best model performance:
 - NumPy
 - Scikit-learn
 - XGBoost
-- Matplotlib
-- Seaborn
+- Joblib
+
+---
 
 ## Future Improvements
 
-- Additional feature engineering
-- Hyperparameter tuning
-- Better handling of match context
-- Testing on larger datasets
-- Model deployment as a web application
+- Batter-bowler matchup statistics
+- Advanced player form metrics
+- Deep learning sequence models
+- Live score prediction interface
+- Web deployment
+
+---
 
 ## Author
 
-Rithvik Reddy
+**Rithvik Reddy**
