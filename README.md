@@ -220,7 +220,6 @@ before running predictions.
 
 - Batter-bowler matchup statistics
 - Advanced player form metrics
-- Deep learning sequence models
 - Live score prediction interface
 - Web deployment
 
