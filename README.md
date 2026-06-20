@@ -100,6 +100,31 @@ The tuned XGBoost model achieved the best performance and was selected as the fi
 
 ---
 
+## Deep Learning Experiment
+
+A feed-forward Artificial Neural Network (ANN) was also evaluated using TensorFlow/Keras.
+
+The ANN pipeline included:
+
+- Feature scaling
+- Dense hidden layers
+- Dropout regularization
+- EarlyStopping to reduce overfitting
+
+### ANN Results
+
+| Metric | Value |
+|----------|----------|
+| R² Score | **0.624** |
+| MAE | **15.15** |
+| MSE | **380.46** |
+
+The ANN improved over baseline models but was outperformed by the tuned XGBoost model.
+
+This suggests that gradient-boosted trees were better suited for this feature-engineered tabular cricket dataset.
+
+---
+
 ## Final Results
 
 ### XGBoost Regressor
